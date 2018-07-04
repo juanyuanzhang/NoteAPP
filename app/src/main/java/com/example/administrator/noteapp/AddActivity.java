@@ -157,19 +157,20 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 
                         String date = year+"-"+(month+1)+"-"+dayOfMonth;
                         editdate.setText(date);
+                        Notification notification = new Notification.Builder(AddActivity.this)
+                                .setSmallIcon(R.mipmap.note)
+                                .setContentTitle("這是TEDST")
+                                .setContentText("這是TEST")
+                                .setWhen(System.currentTimeMillis()).build();
+                        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                        manager.notify(1,notification);
                     }
                 };
 
                 DatePickerDialog dialog = new DatePickerDialog(AddActivity.this, DatePickerDialog.THEME_DEVICE_DEFAULT_LIGHT, dateSetListener, year, month, dayOfMonth);
                 dialog.show();
 
-                Notification notification = new Notification.Builder(this)
-                        .setSmallIcon(R.mipmap.note)
-                        .setContentTitle("")
-                        .setContentText("")
-                        .setWhen(System.currentTimeMillis()).build();
-                NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                manager.notify(1,notification);
+
                 break;
 
             case R.id.editdate:
