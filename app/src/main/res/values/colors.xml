@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#f1b91f</color>
+    <color name="colorPrimaryDark">#e73f3f</color>
+    <color name="colorAccent">#FF4081</color>
+    <drawable name="white">#FFFFFFFF</drawable>
+    <drawable name="blue">#FF40DFFF</drawable>
+    <drawable name="red">#ff404d</drawable>
+    <drawable name="green">#40ffbf</drawable>
+    <drawable name="orange">#ffb940</drawable>
+
+</resources>
