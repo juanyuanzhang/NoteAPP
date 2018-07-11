@@ -34,7 +34,7 @@ public class MDBAdapter  { //自定Adapter
         mdbHelper.close();
     }
     public Cursor listshow (){ //產生CURSOR給 查詢完的資料存放，再將資料傳給主頁listview顯示
-        Cursor mcursor = mdb.query(TABLE_NAME, new String[]{KEY_ID,KEY_DATE,KEY_TOP,KEY_CONT,KEY_CONT},null,null,null,null,null);
+        Cursor mcursor = mdb.query(TABLE_NAME, new String[]{KEY_ID,KEY_DATE,KEY_TOP,KEY_CONT,KEY_NOTIFY},null,null,null,null,null);
         if(mcursor!=null)
             mcursor.moveToFirst();
         return mcursor;
@@ -50,7 +50,7 @@ public class MDBAdapter  { //自定Adapter
         }catch (Exception e){
             e.printStackTrace();
         }finally {
-            Toast.makeText(mCte,"CREATE ",Toast.LENGTH_LONG).show();
+            Toast.makeText(mCte,"新增成功 ",Toast.LENGTH_LONG).show();
         }
         return mdb.insert(TABLE_NAME,null,values);
     }
@@ -61,14 +61,14 @@ public class MDBAdapter  { //自定Adapter
         values.put(KEY_TOP,top);
         values.put(KEY_CONT,con);
         values.put(KEY_NOTIFY,notify);
-        Toast.makeText(mCte,"UPDATE",Toast.LENGTH_LONG).show();
+        Toast.makeText(mCte,"已更",Toast.LENGTH_LONG).show();
         return mdb.update(TABLE_NAME,values,"_id="+id,null);
     }
     //刪除
     public  boolean deletedata (int id){
         String[] args = {Integer.toString(id)}; //將ID值轉換成字串
         mdb.delete(TABLE_NAME,"_id=?",args);
-        Toast.makeText(mCte,"DELETE",Toast.LENGTH_LONG).show();
+        Toast.makeText(mCte,"已刪除",Toast.LENGTH_LONG).show();
         return true;
     }
     //查詢

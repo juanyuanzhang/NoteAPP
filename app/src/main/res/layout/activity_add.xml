@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="92dp"
         android:layout_marginStart="16dp"
-        android:text="顏色選擇："
+        android:text="便條紙顏色："
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -97,7 +97,7 @@
         android:layout_width="118dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:text="設定提醒時間"
+        android:text="設定時間"
         app:layout_constraintBottom_toTopOf="@+id/btnok"
         app:layout_constraintEnd_toEndOf="parent" />
 

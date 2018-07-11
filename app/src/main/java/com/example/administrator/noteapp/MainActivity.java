@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private Intent i;
     private ListView listView;
     private MDBAdapter mdbAdapter;
-    private SimpleCursorAdapter dataAdapter;
+    private ListAdapter dataAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,44 +25,48 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.mainList);
         mdbAdapter = new MDBAdapter(this);
-        showlistView();
-
+         showlistView();
+    }
+        public void showlistView() {
+        Cursor cursor = mdbAdapter.listshow();
+        dataAdapter = new ListAdapter(this,cursor);
+        listView.setAdapter(dataAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Cursor itemcursor = (Cursor) listView.getItemAtPosition(position);
-                int itemid = itemcursor.getInt( itemcursor.getColumnIndexOrThrow("_id"));
+                int itemid = itemcursor.getInt(itemcursor.getColumnIndexOrThrow("_id"));
                 i = new Intent();
-                i.putExtra("itemid",itemid);
-                i.putExtra("key","edit");
-                i.setClass(MainActivity.this,AddActivity.class);
+                i.putExtra("itemid", itemid);
+                i.putExtra("key", "edit");
+                i.setClass(MainActivity.this, AddActivity.class);
                 startActivity(i);
             }
         });
 
+        }
 
 
-
-    }
-    public void showlistView(){
-        Cursor cursor = mdbAdapter.listshow();
-        String[] columns = new String[]{
-                mdbAdapter.KEY_DATE,
-                mdbAdapter.KEY_TOP,
-                mdbAdapter.KEY_CONT
-
-
-        };
-        int[] to = new int[]{
-                R.id.tvdata,//list_item
-                R.id.tvnote,
-                R.id.tvcon
-
-        };
-        // 自訂的Adapter 需要使用SimpleCursorAdapter   來取資料放入listView中
-        dataAdapter = new SimpleCursorAdapter(this,R.layout.listitem, cursor, columns, to, 0);
-        listView.setAdapter(dataAdapter);
-    }
+//覺得CursorAdapter比較好用
+//    public void showlistView(){
+//        Cursor cursor = mdbAdapter.listshow();
+//        String[] columns = new String[]{
+//                mdbAdapter.KEY_DATE,
+//                mdbAdapter.KEY_TOP,
+//                mdbAdapter.KEY_CONT
+//
+//
+//        };
+//        int[] to = new int[]{
+//                R.id.tvdate,//list_item
+//                R.id.tvnote,
+//                R.id.tvcon
+//
+//        };
+//        // 自訂的Adapter 需要使用SimpleCursorAdapter   來取資料放入listView中
+//        dataAdapter = new SimpleCursorAdapter(this,R.layout.listitem, cursor, columns, to, 0);
+//        listView.setAdapter(dataAdapter);
+//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();

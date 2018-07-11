@@ -9,13 +9,14 @@
     <LinearLayout
         android:id="@+id/listlayout2"
         android:layout_width="match_parent"
-        android:layout_height="88dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:orientation="vertical"
         android:padding="10dp"
         android:paddingLeft="15dp">
 
         <TextView
-            android:id="@+id/tvdata"
+            android:id="@+id/tvdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="日期:"

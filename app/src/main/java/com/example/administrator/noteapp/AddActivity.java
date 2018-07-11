@@ -219,8 +219,8 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Boolean isDeleted = mdbAdapter.deletedata(index);
-                                if (isDeleted)
-                                    Toast.makeText(AddActivity.this, "已刪除!", Toast.LENGTH_LONG).show();
+                                Intent i  = new Intent(AddActivity.this,MainActivity.class);
+                                startActivity(i);
                             }
                         })
                         .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
