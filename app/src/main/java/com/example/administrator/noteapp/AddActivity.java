@@ -1,11 +1,15 @@
 package com.example.administrator.noteapp;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
@@ -33,10 +37,14 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
     public Spinner spinner ;
     public String new_date ,new_top,new_con, new_color;
     private MDBAdapter mdbAdapter;
-    Bundle bundle;
-    int index;
+    private Bundle bundle;
+    private int index;
     private ConstraintLayout Layout;
     private int position;
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
+    final Calendar c =Calendar.getInstance();
+    private boolean alarmset = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +61,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             editdate.setText(cursor.getString(1));
             edittop.setText(cursor.getString(2));
             editcon.setText(cursor.getString(3));
-
+            //設定背景顏色與下拉式選單預設值
             if (cursor.getString(4).equals("#FFFFFFFF")){
                 position=0;
             }else if(cursor.getString(4).equals("#FF40DFFF")){
@@ -74,7 +82,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             });
 
         }
-
+        //下拉是選單選擇背景顏色設定
         ArrayAdapter<CharSequence>nAdapter = ArrayAdapter.createFromResource(this,R.array.notify_array,android.R.layout.simple_spinner_item);
         spinner.setAdapter(nAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -126,15 +134,17 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         btnset = findViewById(R.id.btnset);
         btnset.setOnClickListener(this);
         Layout = findViewById(R.id.addlayout);
-
-
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnok:
+                //執行alarmmanager鬧鐘功能
+                if(alarmset)//有設定提醒時間才執行
+                alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),AlarmManager.INTERVAL_DAY, alarmIntent);
 
+                //設定變數數據存入資料庫
                 new_date=editdate.getText().toString();
                 new_top=edittop.getText().toString();
                 new_con=editcon.getText().toString();
@@ -165,7 +175,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 break;
 
             case R.id.btnset:
-                final Calendar c =Calendar.getInstance();
+
                 int year = c.get(Calendar.YEAR);
                 int month = c.get(Calendar.MONTH);
                 int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
@@ -174,22 +184,27 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
+                        //設定日期text
                         String date = year+"-"+(month+1)+"-"+dayOfMonth;
                         editdate.setText(date);
                         c.setTimeInMillis(System.currentTimeMillis());
                         c.set(Calendar.YEAR,year);
                         c.set(Calendar.MONTH,month);
                         c.set(Calendar.DATE,dayOfMonth);
-                        //c.set(year,month+1,dayOfMonth);
+                        //註冊廣播
+                        IntentFilter intentFilter = new IntentFilter("com.example.administrator.noteapp");
+                        MyNoteReceiver myNoteReceiver = new MyNoteReceiver();
+                        registerReceiver(myNoteReceiver,intentFilter);
 
-                        Notification notification = new Notification.Builder(AddActivity.this)
-                                .setSmallIcon(R.mipmap.note)
-                                .setContentTitle("ToDoList")
-                                .setContentText(edittop.getText().toString())
-                                .setWhen(c.getTimeInMillis()).build();//calendar.getTimeInMillis()
-                        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                        assert manager != null;
-                        manager.notify(1,notification);
+                        //設定AlarmManager傳送廣播時間
+                        alarmMgr=(AlarmManager)getSystemService(Service.ALARM_SERVICE);
+                        Intent intent=new Intent("com.example.administrator.noteapp");
+                        intent.putExtra("msg",edittop.getText().toString());
+                        intent.putExtra("id",index);
+                        intent.setClass(AddActivity.this, MyNoteReceiver.class);
+                        alarmIntent = PendingIntent.getBroadcast(AddActivity.this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                        alarmset = true;
+
                     }
                 };
 

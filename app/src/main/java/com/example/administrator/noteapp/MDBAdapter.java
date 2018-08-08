@@ -60,7 +60,7 @@ public class MDBAdapter  { //自定Adapter
         values.put(KEY_TOP,top);
         values.put(KEY_CONT,con);
         values.put(KEY_COLOR,color);
-        Toast.makeText(mCte,"已更",Toast.LENGTH_LONG).show();
+        Toast.makeText(mCte,"已更新",Toast.LENGTH_LONG).show();
         return mdb.update(TABLE_NAME,values,"_id="+id,null);
     }
     //刪除
