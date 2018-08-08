@@ -6,13 +6,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,35 +21,31 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Calendar;
-
-import static com.example.administrator.noteapp.R.drawable.white;
 
 public class AddActivity extends AppCompatActivity implements View.OnClickListener  {
     public Button btnok,btnset;
     public EditText editdate,edittop,editcon;
     public TextView tvadd;
     public Spinner spinner ;
-    public String new_date ,new_top,new_con,new_notify;
+    public String new_date ,new_top,new_con, new_color;
     private MDBAdapter mdbAdapter;
     Bundle bundle;
     int index;
-
-
-
+    private ConstraintLayout Layout;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
         findview();
+        //連接資料庫
         mdbAdapter = new MDBAdapter(this);
-        bundle = getIntent().getExtras();
+        bundle = getIntent().getExtras();//取得Intent傳送過來的資料
         if(bundle.getString("key").equals("edit")){  //確認intent回傳KEY值為edit ，更改標題，取得ID，呼叫querydata()方法，將值show出
             tvadd.setText("編輯便條紙");
             index = bundle.getInt("itemid");
@@ -59,6 +54,25 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             edittop.setText(cursor.getString(2));
             editcon.setText(cursor.getString(3));
 
+            if (cursor.getString(4).equals("#FFFFFFFF")){
+                position=0;
+            }else if(cursor.getString(4).equals("#FF40DFFF")){
+                position=1;
+            }else if(cursor.getString(4).equals("#ff404d")){
+                position=2;
+            }else if(cursor.getString(4).equals("#40ffbf")){
+                position=3;
+            }else if(cursor.getString(4).equals("#ffb940")) {
+                position=4;
+            }
+            //spinner必須搭配post才會執行選定項目設定
+            spinner.post(new Runnable() {
+                @Override
+                public void run() {
+                    spinner.setSelection(position);
+                }
+            });
+
         }
 
         ArrayAdapter<CharSequence>nAdapter = ArrayAdapter.createFromResource(this,R.array.notify_array,android.R.layout.simple_spinner_item);
@@ -66,22 +80,26 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
                 switch(spinner.getSelectedItemPosition()) {
                     case 0:
-                        new_notify="#FFFFFFFF" ;
+                        new_color ="#FFFFFFFF" ;
+                        Layout.setBackgroundColor(Color.parseColor(new_color));
                     break;
                     case 1:
-                        new_notify="#FF40DFFF" ;
+                        new_color ="#FF40DFFF" ;
+                        Layout.setBackgroundColor(Color.parseColor(new_color));
                         break;
                     case 2:
-                        new_notify="#ff404d" ;
+                        new_color ="#ff404d" ;
+                        Layout.setBackgroundColor(Color.parseColor(new_color));
                         break;
                     case 3:
-                        new_notify="#40ffbf" ;
+                        new_color ="#40ffbf" ;
+                        Layout.setBackgroundColor(Color.parseColor(new_color));
                         break;
                     case 4:
-                        new_notify="#ffb940" ;
+                        new_color ="#ffb940" ;
+                        Layout.setBackgroundColor(Color.parseColor(new_color));
                         break;
                 }
 
@@ -107,6 +125,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         editdate.setOnClickListener(this);
         btnset = findViewById(R.id.btnset);
         btnset.setOnClickListener(this);
+        Layout = findViewById(R.id.addlayout);
 
 
     }
@@ -119,11 +138,11 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 new_date=editdate.getText().toString();
                 new_top=edittop.getText().toString();
                 new_con=editcon.getText().toString();
-                //new_notify =
+                //new_color =
                 if(bundle.getString("key").equals("add")){
                     try {
                         //呼叫adapter的方法處理新增
-                        mdbAdapter.createdata(new_date, new_top, new_con, new_notify);
+                        mdbAdapter.createdata(new_date, new_top, new_con, new_color);
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
@@ -135,7 +154,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 }else{
 
                     try{
-                        mdbAdapter.updatedata(index, new_date, new_top, new_con, new_notify);
+                        mdbAdapter.updatedata(index, new_date, new_top, new_con, new_color);
                     }catch (Exception e){
                         e.printStackTrace();
                     }finally {
@@ -157,12 +176,19 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 
                         String date = year+"-"+(month+1)+"-"+dayOfMonth;
                         editdate.setText(date);
+                        c.setTimeInMillis(System.currentTimeMillis());
+                        c.set(Calendar.YEAR,year);
+                        c.set(Calendar.MONTH,month);
+                        c.set(Calendar.DATE,dayOfMonth);
+                        //c.set(year,month+1,dayOfMonth);
+
                         Notification notification = new Notification.Builder(AddActivity.this)
                                 .setSmallIcon(R.mipmap.note)
-                                .setContentTitle("這是TEDST")
-                                .setContentText("這是TEST")
-                                .setWhen(System.currentTimeMillis()).build();
+                                .setContentTitle("ToDoList")
+                                .setContentText(edittop.getText().toString())
+                                .setWhen(c.getTimeInMillis()).build();//calendar.getTimeInMillis()
                         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                        assert manager != null;
                         manager.notify(1,notification);
                     }
                 };
@@ -210,8 +236,8 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete:
-                AlertDialog dialog = null;
-                AlertDialog.Builder builder = null;
+                AlertDialog dialog ;
+                AlertDialog.Builder builder;
                 builder = new AlertDialog.Builder(this);
                 builder.setTitle("NOTE")
                         .setMessage("ARE YOU SURE? DELETE THIS ONE?")

@@ -10,13 +10,13 @@ import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/**
+/*
  * Created by juan on 2018/7/11.
  */
 //取代SimpleCursorAdapter 的CursorAdapter
 public class ListAdapter extends CursorAdapter {
-    LayoutInflater inflater;
-    public ListAdapter(Context context, Cursor c) {
+    private LayoutInflater inflater;
+     ListAdapter(Context context, Cursor c) {
         super(context, c, 0);
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }

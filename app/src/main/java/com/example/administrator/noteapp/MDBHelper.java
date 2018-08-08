@@ -7,13 +7,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MDBHelper extends SQLiteOpenHelper {
 
     public MDBHelper(Context context) {
-        super(context, "notesource", null, 1);
+        super(context, "notesource.DB", null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS notesource"+
-        "(_id INTEGER PRIMARY KEY autoincrement ,date,top,cont,notify)");
+        "(_id INTEGER PRIMARY KEY autoincrement ,date,top,cont,color)");
 
     }
 
