@@ -20,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="日期:"
+            android:textColor="@android:color/background_dark"
             android:textSize="18sp" />
 
         <TextView
@@ -27,12 +28,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="標題:"
+            android:textColor="@android:color/background_dark"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/tvcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="內容:" />
+            android:hint="內容:"
+            android:paddingLeft="5dp" />
     </LinearLayout>
 </LinearLayout>

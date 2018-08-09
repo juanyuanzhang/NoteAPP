@@ -25,29 +25,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         listView = findViewById(R.id.mainList);
         mdbAdapter = new MDBAdapter(this);
-         showlistView();
+        showlistView();
     }
         public void showlistView() {
-        Cursor cursor = mdbAdapter.listshow();
-        dataAdapter = new ListAdapter(this,cursor);
-        listView.setAdapter(dataAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor itemcursor = (Cursor) listView.getItemAtPosition(position);
-                int itemid = itemcursor.getInt(itemcursor.getColumnIndexOrThrow("_id"));
-                i = new Intent();
-                i.putExtra("itemid", itemid);
-                i.putExtra("key", "edit");
-                i.setClass(MainActivity.this, AddActivity.class);
-                startActivity(i);
-            }
-        });
+            Cursor cursor = mdbAdapter.listshow();
+            dataAdapter = new ListAdapter(this,cursor);
+            listView.setAdapter(dataAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Cursor itemcursor = (Cursor) listView.getItemAtPosition(position);
+                    int itemid = itemcursor.getInt(itemcursor.getColumnIndexOrThrow("_id"));
+                    i = new Intent();
+                    i.putExtra("itemid", itemid);
+                    i.putExtra("key", "edit");
+                    i.setClass(MainActivity.this, AddActivity.class);
+                    startActivity(i);
+                }
+            });
 
         }
 
-
-//覺得CursorAdapter比較好用
+//使用SimpleCursorAdapter
 //    public void showlistView(){
 //        Cursor cursor = mdbAdapter.listshow();
 //        String[] columns = new String[]{
@@ -89,4 +88,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

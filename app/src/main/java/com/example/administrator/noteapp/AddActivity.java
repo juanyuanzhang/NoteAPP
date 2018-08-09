@@ -27,32 +27,40 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Calendar;
 
 public class AddActivity extends AppCompatActivity implements View.OnClickListener  {
-    public Button btnok,btnset;
+    public Button btnok,btnset,btncancel;
     public EditText editdate,edittop,editcon;
     public TextView tvadd;
     public Spinner spinner ;
     public String new_date ,new_top,new_con, new_color;
     private MDBAdapter mdbAdapter;
     private Bundle bundle;
-    private int index;
+    private int index=1 ;
     private ConstraintLayout Layout;
     private int position;
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
     final Calendar c =Calendar.getInstance();
-    private boolean alarmset = false;
+    private long  datetime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
         findview();
+
         //連接資料庫
         mdbAdapter = new MDBAdapter(this);
+        //新增時查詢list最後id預測本次資料id=最後id+1給提醒功能id值
+        Log.i("index", String.valueOf(index));
+        Cursor alarmcursor = mdbAdapter.addforalarm();
+        Log.i("alarm", String.valueOf(alarmcursor.getCount()));
+        if(alarmcursor.getCount() != 0) index = alarmcursor.getInt(alarmcursor.getColumnIndexOrThrow("_id"))+1;
+        Log.i("index", String.valueOf(index));
         bundle = getIntent().getExtras();//取得Intent傳送過來的資料
         if(bundle.getString("key").equals("edit")){  //確認intent回傳KEY值為edit ，更改標題，取得ID，呼叫querydata()方法，將值show出
             tvadd.setText("編輯便條紙");
@@ -80,7 +88,6 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                     spinner.setSelection(position);
                 }
             });
-
         }
         //下拉是選單選擇背景顏色設定
         ArrayAdapter<CharSequence>nAdapter = ArrayAdapter.createFromResource(this,R.array.notify_array,android.R.layout.simple_spinner_item);
@@ -110,18 +117,14 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                         Layout.setBackgroundColor(Color.parseColor(new_color));
                         break;
                 }
-
             }
-
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
-
-
     }
+
     private void findview(){
         btnok = findViewById(R.id.btnok);
         edittop = findViewById(R.id.edittop);
@@ -134,21 +137,23 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         btnset = findViewById(R.id.btnset);
         btnset.setOnClickListener(this);
         Layout = findViewById(R.id.addlayout);
+        btncancel =findViewById(R.id.btncancel);
+        btncancel.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnok:
-                //執行alarmmanager鬧鐘功能
-                if(alarmset)//有設定提醒時間才執行
-                alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(),AlarmManager.INTERVAL_DAY, alarmIntent);
-
+                //設定AlarmManager傳送廣播時間
+                if(datetime!=0)
+                alarmMgr.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), alarmIntent);// 只提醒一次 用set ，一直體醒用setInexactRepeating ( AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY,alarmIntent)
                 //設定變數數據存入資料庫
                 new_date=editdate.getText().toString();
                 new_top=edittop.getText().toString();
                 new_con=editcon.getText().toString();
                 //new_color =
+                //如果是新增畫面
                 if(bundle.getString("key").equals("add")){
                     try {
                         //呼叫adapter的方法處理新增
@@ -161,7 +166,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                         startActivity(i);
                     }
 
-                }else{
+                }else{//編輯畫面
 
                     try{
                         mdbAdapter.updatedata(index, new_date, new_top, new_con, new_color);
@@ -174,7 +179,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 }
                 break;
 
-            case R.id.btnset:
+            case R.id.btnset://設定提醒按鈕
 
                 int year = c.get(Calendar.YEAR);
                 int month = c.get(Calendar.MONTH);
@@ -195,26 +200,34 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                         IntentFilter intentFilter = new IntentFilter("com.example.administrator.noteapp");
                         MyNoteReceiver myNoteReceiver = new MyNoteReceiver();
                         registerReceiver(myNoteReceiver,intentFilter);
-
-                        //設定AlarmManager傳送廣播時間
+                        //設定AlarmManager傳送廣播時間與資料
                         alarmMgr=(AlarmManager)getSystemService(Service.ALARM_SERVICE);
                         Intent intent=new Intent("com.example.administrator.noteapp");
                         intent.putExtra("msg",edittop.getText().toString());
                         intent.putExtra("id",index);
                         intent.setClass(AddActivity.this, MyNoteReceiver.class);
-                        alarmIntent = PendingIntent.getBroadcast(AddActivity.this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-                        alarmset = true;
-
+                        alarmIntent = PendingIntent.getBroadcast(AddActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        datetime = c.getTimeInMillis();
+                        Toast.makeText(AddActivity.this,"提醒已設定",Toast.LENGTH_SHORT).show();
                     }
                 };
-
                 DatePickerDialog dialog = new DatePickerDialog(AddActivity.this, DatePickerDialog.THEME_DEVICE_DEFAULT_LIGHT, dateSetListener, year, month, dayOfMonth);
                 dialog.show();
-
-
                 break;
 
-            case R.id.editdate:
+            case R.id.btncancel:
+                //取消提醒
+                alarmMgr=(AlarmManager)getSystemService(Service.ALARM_SERVICE);
+                Intent intent=new Intent("com.example.administrator.noteapp");
+                intent.putExtra("msg",edittop.getText().toString());
+                intent.putExtra("id",index);
+                intent.setClass(AddActivity.this, MyNoteReceiver.class);
+                alarmIntent = PendingIntent.getBroadcast(AddActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                alarmMgr.cancel(alarmIntent);
+                Toast.makeText(AddActivity.this,"提醒已取消",Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.editdate://點擊日期可使用日曆
                 final Calendar c2 =Calendar.getInstance();
                 int year2 = c2.get(Calendar.YEAR);
                 int month2 = c2.get(Calendar.MONTH);
@@ -259,7 +272,16 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                         .setPositiveButton("SURE", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                //刪除資料
                                 Boolean isDeleted = mdbAdapter.deletedata(index);
+                                //一起取消提醒
+                                alarmMgr=(AlarmManager)getSystemService(Service.ALARM_SERVICE);
+                                Intent intent=new Intent("com.example.administrator.noteapp");
+                                intent.putExtra("msg",edittop.getText().toString());
+                                intent.putExtra("id",index);
+                                intent.setClass(AddActivity.this, MyNoteReceiver.class);
+                                alarmIntent = PendingIntent.getBroadcast(AddActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                                alarmMgr.cancel(alarmIntent);
                                 Intent i  = new Intent(AddActivity.this,MainActivity.class);
                                 startActivity(i);
                             }
@@ -284,4 +306,24 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             }
         return super.onOptionsItemSelected(item);
     }
+
+    public void alarmclose(){
+        alarmMgr=(AlarmManager)getSystemService(Service.ALARM_SERVICE);
+        Intent intent=new Intent("com.example.administrator.noteapp");
+        intent.putExtra("msg",edittop.getText().toString());
+        intent.putExtra("id",index);
+        intent.setClass(AddActivity.this, MyNoteReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(AddActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmMgr.cancel(alarmIntent);
+    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        Log.i("onStop()","onStop()");
+//        if(alarmset)//有設定提醒時間才執行
+//        unregisterReceiver(myNoteReceiver);
+//    }
+//    public void cancelbroadcast(){
+//        unregisterReceiver(myNoteReceiver);
+//    }
 }

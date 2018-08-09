@@ -4,8 +4,9 @@
 
     <item
         android:id="@+id/baradd"
+        android:icon="@mipmap/noteadd2"
         android:title="新增"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/baredit"
         android:title="編輯"

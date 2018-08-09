@@ -77,4 +77,10 @@ public class MDBAdapter  { //自定Adapter
             mcursor.moveToFirst();
         return mcursor;
     }
+    public Cursor addforalarm (){ //產生CURSOR給 查詢完的資料存放，再將資料傳給主頁listview顯示
+        Cursor mcursor = mdb.query(TABLE_NAME, new String[]{KEY_ID,KEY_DATE,KEY_TOP,KEY_CONT, KEY_COLOR},null,null,null,null,null);
+        if(mcursor!=null)
+            mcursor.moveToLast();
+        return mcursor;
+    }
 }
