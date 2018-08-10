@@ -14,6 +14,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="新增便條紙"
+        android:textColor="@android:color/background_dark"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +23,7 @@
     <EditText
         android:id="@+id/editcon"
         android:layout_width="0dp"
-        android:layout_height="258dp"
+        android:layout_height="240dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:ems="10"
@@ -48,21 +49,24 @@
         android:id="@+id/btnok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginTop="40dp"
         android:text="@string/okch"
-        app:layout_constraintStart_toEndOf="@+id/btncancel"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editcon" />
 
     <EditText
         android:id="@+id/edittop"
-        android:layout_width="325dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:ems="10"
         android:hint="標題:"
         android:inputType="textPersonName"
         android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editdate" />
 
@@ -92,20 +96,18 @@
         android:id="@+id/btnset"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="32dp"
         android:text="設定提醒日期"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintStart_toEndOf="@+id/editdate"
+        app:layout_constraintTop_toTopOf="@+id/tvadd" />
 
     <Button
         android:id="@+id/btncancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="4dp"
         android:text="取消提醒"
         app:layout_constraintStart_toEndOf="@+id/btnset"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        tools:layout_editor_absoluteY="48dp" />
 
 </android.support.constraint.ConstraintLayout>

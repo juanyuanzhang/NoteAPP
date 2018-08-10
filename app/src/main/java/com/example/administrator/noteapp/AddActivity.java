@@ -218,6 +218,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             case R.id.btncancel:
                 //取消提醒
                 alarmMgr=(AlarmManager)getSystemService(Service.ALARM_SERVICE);
+                datetime = 0;
                 Intent intent=new Intent("com.example.administrator.noteapp");
                 intent.putExtra("msg",edittop.getText().toString());
                 intent.putExtra("id",index);
@@ -306,24 +307,4 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             }
         return super.onOptionsItemSelected(item);
     }
-
-    public void alarmclose(){
-        alarmMgr=(AlarmManager)getSystemService(Service.ALARM_SERVICE);
-        Intent intent=new Intent("com.example.administrator.noteapp");
-        intent.putExtra("msg",edittop.getText().toString());
-        intent.putExtra("id",index);
-        intent.setClass(AddActivity.this, MyNoteReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(AddActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmMgr.cancel(alarmIntent);
-    }
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        Log.i("onStop()","onStop()");
-//        if(alarmset)//有設定提醒時間才執行
-//        unregisterReceiver(myNoteReceiver);
-//    }
-//    public void cancelbroadcast(){
-//        unregisterReceiver(myNoteReceiver);
-//    }
 }
