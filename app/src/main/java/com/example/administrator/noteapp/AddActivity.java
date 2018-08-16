@@ -3,8 +3,6 @@ package com.example.administrator.noteapp;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.DialogInterface;
@@ -55,17 +53,20 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
 
         //連接資料庫
         mdbAdapter = new MDBAdapter(this);
+
         //新增時查詢list最後id預測本次資料id=最後id+1給提醒功能id值
         Log.i("index", String.valueOf(index));
         Cursor alarmcursor = mdbAdapter.addforalarm();
         Log.i("alarm", String.valueOf(alarmcursor.getCount()));
+        //如果查詢資料數目不為先預設新增資料ID為查詢最後資料ID值加1
         if(alarmcursor.getCount() != 0) index = alarmcursor.getInt(alarmcursor.getColumnIndexOrThrow("_id"))+1;
         Log.i("index", String.valueOf(index));
+        //從首頁傳來的INTENT
         bundle = getIntent().getExtras();//取得Intent傳送過來的資料
         if(bundle.getString("key").equals("edit")){  //確認intent回傳KEY值為edit ，更改標題，取得ID，呼叫querydata()方法，將值show出
             tvadd.setText("編輯便條紙");
             index = bundle.getInt("itemid");
-            Cursor cursor = mdbAdapter.querydata(index);
+            Cursor cursor = mdbAdapter.querydata(index);//利用ID值查詢資料，在顯示在EditView上
             editdate.setText(cursor.getString(1));
             edittop.setText(cursor.getString(2));
             editcon.setText(cursor.getString(3));
@@ -81,7 +82,7 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
             }else if(cursor.getString(4).equals("#ffb940")) {
                 position=4;
             }
-            //spinner必須搭配post才會執行選定項目設定
+            //spinner必須搭配post()方法才會執行選定項目設定
             spinner.post(new Runnable() {
                 @Override
                 public void run() {
@@ -89,9 +90,10 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 }
             });
         }
-        //下拉是選單選擇背景顏色設定
+        //下拉式選單選擇背景顏色文字設定
         ArrayAdapter<CharSequence>nAdapter = ArrayAdapter.createFromResource(this,R.array.notify_array,android.R.layout.simple_spinner_item);
         spinner.setAdapter(nAdapter);
+        //下拉式選單選擇背景顏色設定監聽
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -140,28 +142,29 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         btncancel =findViewById(R.id.btncancel);
         btncancel.setOnClickListener(this);
     }
-
+    //按鈕監聽事件處理
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnok:
                 //設定AlarmManager傳送廣播時間
                 if(datetime!=0)
-                alarmMgr.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), alarmIntent);// 只提醒一次 用set ，一直體醒用setInexactRepeating ( AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY,alarmIntent)
+                alarmMgr.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), alarmIntent);// 只提醒一次 用set ，一直提醒用setInexactRepeating ( AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY,alarmIntent)
                 //設定變數數據存入資料庫
+                //將EditView上的數據設給變數
                 new_date=editdate.getText().toString();
                 new_top=edittop.getText().toString();
                 new_con=editcon.getText().toString();
-                //new_color =
+
                 //如果是新增畫面
                 if(bundle.getString("key").equals("add")){
                     try {
-                        //呼叫adapter的方法處理新增
-                        mdbAdapter.createdata(new_date, new_top, new_con, new_color);
+                        //呼叫mdbadapter的方法處理新增
+                        mdbAdapter.createdata(new_date, new_top, new_con, new_color); //顏色資料由下拉式選單那設定
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
-                        //回到列表
+                        //回到清單列表
                         Intent i = new Intent(this, MainActivity.class);
                         startActivity(i);
                     }
@@ -180,11 +183,11 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                 break;
 
             case R.id.btnset://設定提醒按鈕
-
+                //給第219行使用變數 日曆一開始的日期
                 int year = c.get(Calendar.YEAR);
                 int month = c.get(Calendar.MONTH);
                 int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-
+                //使用日曆Dialog
                 DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -206,8 +209,8 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                         intent.putExtra("msg",edittop.getText().toString());
                         intent.putExtra("id",index);
                         intent.setClass(AddActivity.this, MyNoteReceiver.class);
-                        alarmIntent = PendingIntent.getBroadcast(AddActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                        datetime = c.getTimeInMillis();
+                        alarmIntent = PendingIntent.getBroadcast(AddActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);//index為廣播判斷是哪一筆通知用
+                        datetime = c.getTimeInMillis();//為了給確定按鈕用的
                         Toast.makeText(AddActivity.this,"提醒已設定",Toast.LENGTH_SHORT).show();
                     }
                 };
@@ -260,11 +263,11 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         }
         return super.onCreateOptionsMenu(menu);
     }
-
+    //menu事件監聽處理
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.delete:
+            case R.id.delete: //刪除按鈕會出現一個AlerDialog提醒用戶確定是否要刪除
                 AlertDialog dialog ;
                 AlertDialog.Builder builder;
                 builder = new AlertDialog.Builder(this);

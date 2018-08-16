@@ -17,7 +17,7 @@ public class MDBAdapter  { //自定Adapter
     private SQLiteDatabase mdb;
     private MDBHelper mdbHelper;
     private Context mCte;
-    private Intent intent ;
+    //private Intent intent ;
     private ContentValues values ;
 
     public MDBAdapter(Context mCte) {
@@ -77,10 +77,10 @@ public class MDBAdapter  { //自定Adapter
             mcursor.moveToFirst();
         return mcursor;
     }
-    public Cursor addforalarm (){ //產生CURSOR給 查詢完的資料存放，再將資料傳給主頁listview顯示
+    public Cursor addforalarm (){ //新增時查詢list最後id預測本次資料id=最後id+1給提醒功能id值 所用
         Cursor mcursor = mdb.query(TABLE_NAME, new String[]{KEY_ID,KEY_DATE,KEY_TOP,KEY_CONT, KEY_COLOR},null,null,null,null,null);
         if(mcursor!=null)
-            mcursor.moveToLast();
+            mcursor.moveToLast();//移至最後一個資料
         return mcursor;
     }
 }

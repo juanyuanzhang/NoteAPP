@@ -4,14 +4,14 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class MDBHelper extends SQLiteOpenHelper {
+public class MDBHelper extends SQLiteOpenHelper { //繼承SQLiteOpenHelper
 
     public MDBHelper(Context context) {
-        super(context, "notesource.DB", null, 1);
+        super(context, "notesource.DB", null, 1); //設定資料庫名稱
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db) {   //建立資料表
         db.execSQL("CREATE TABLE IF NOT EXISTS notesource"+
         "(_id INTEGER PRIMARY KEY autoincrement ,date,top,cont,color)");
 

@@ -18,6 +18,7 @@ public class MyNoteReceiver extends BroadcastReceiver {
     //利用廣播開啟提醒通知
     @Override
     public void onReceive(Context context, Intent intent) {
+
         Vibrator myVibrator;//宣告震動物件變數 ，使用震動必須宣告權限喔
         myVibrator = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);//取得震動物件
         if(myVibrator!=null)
@@ -34,7 +35,7 @@ public class MyNoteReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.mipmap.note2)
                 .setContentTitle("ToDoList")
                 .setContentText(top)
-                .setContentIntent(pendingIntent)
+                .setContentIntent(pendingIntent)//附加動作才會用到
                 .setWhen(c.getTimeInMillis()).build();//calendar.getTimeInMillis()
         NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         //執行NotificationManager的方法notify()
