@@ -13,7 +13,7 @@ public class MDBHelper extends SQLiteOpenHelper { //繼承SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db) {   //建立資料表
         db.execSQL("CREATE TABLE IF NOT EXISTS notesource"+
-        "(_id INTEGER PRIMARY KEY autoincrement ,date,top,cont,color)");
+        "(_id INTEGER PRIMARY KEY autoincrement ,date VARCHAR(10),top VARCHAR(20),cont VARCHAR(100),color VARCHAR(10))");
 
     }
 
