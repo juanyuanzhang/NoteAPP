@@ -16,7 +16,8 @@ import android.widget.TextView;
 //取代SimpleCursorAdapter 的CursorAdapter
 public class ListAdapter extends CursorAdapter {
     private LayoutInflater inflater;
-     ListAdapter(Context context, Cursor c) {
+
+    ListAdapter(Context context, Cursor c) {
         super(context, c, 0);
         inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
     }
@@ -24,7 +25,7 @@ public class ListAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
 
-        return inflater.inflate(R.layout.listitem,viewGroup,false);  //利用inflate取得Layout物件
+        return inflater.inflate(R.layout.listitem, viewGroup, false);  //利用inflate取得Layout物件
     }
 
     @Override

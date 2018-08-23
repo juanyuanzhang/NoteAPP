@@ -21,15 +21,15 @@ public class MyNoteReceiver extends BroadcastReceiver {
 
         Vibrator myVibrator;//宣告震動物件變數 ，使用震動必須宣告權限喔
         myVibrator = (Vibrator) context.getSystemService(Service.VIBRATOR_SERVICE);//取得震動物件
-        if(myVibrator!=null)
-        myVibrator.vibrate(new long[]{500, 100, 500, 100, 500, 100}, -1);//參數1是振動0.5秒停0.1秒連續三次.參數2是-1代表只 震動一次
+        if (myVibrator != null)
+            myVibrator.vibrate(new long[]{500, 100, 500, 100, 500, 100}, -1);//參數1是振動0.5秒停0.1秒連續三次.參數2是-1代表只 震動一次
         //設定通知的附加動作
-        Intent i =new Intent(context,MainActivity.class);
-        PendingIntent  pendingIntent = PendingIntent.getActivity(context,0,i,PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent i = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         String top = intent.getStringExtra("msg");
-        int id = intent.getIntExtra("id",0);
+        int id = intent.getIntExtra("id", 0);
         Log.i("id", String.valueOf(id));
-        Calendar c =Calendar.getInstance();
+        Calendar c = Calendar.getInstance();
         //設定Notification
         Notification notification = new Notification.Builder(context)
                 .setSmallIcon(R.mipmap.note2)
@@ -40,6 +40,6 @@ public class MyNoteReceiver extends BroadcastReceiver {
         NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         //執行NotificationManager的方法notify()
         assert manager != null;
-        manager.notify(id,notification);
+        manager.notify(id, notification);
     }
 }

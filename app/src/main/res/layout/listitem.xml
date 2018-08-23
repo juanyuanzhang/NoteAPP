@@ -27,7 +27,6 @@
             android:id="@+id/tvnote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="標題:"
             android:paddingLeft="5dp"
             android:textColor="@android:color/background_dark"
             android:textSize="18sp" />
