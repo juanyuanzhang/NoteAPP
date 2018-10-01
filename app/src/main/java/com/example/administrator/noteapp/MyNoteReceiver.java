@@ -36,6 +36,7 @@ public class MyNoteReceiver extends BroadcastReceiver {
                 .setContentTitle("ToDoList")
                 .setContentText(top)
                 .setContentIntent(pendingIntent)//附加動作才會用到
+                .setAutoCancel(true)  //使用者按一下通知，而您在建立通知時呼叫此方法移除通知列
                 .setWhen(c.getTimeInMillis()).build();//calendar.getTimeInMillis()
         NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         //執行NotificationManager的方法notify()

@@ -58,10 +58,12 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
         Log.i("index", String.valueOf(index));
         Cursor alarmcursor = mdbAdapter.addforalarm();
         Log.i("alarm", String.valueOf(alarmcursor.getCount()));
+
         //如果查詢資料數目不為先預設新增資料ID為查詢最後資料ID值加1
         if (alarmcursor.getCount() != 0)
             index = alarmcursor.getInt(alarmcursor.getColumnIndexOrThrow("_id")) + 1;
         Log.i("index", String.valueOf(index));
+        
         //從首頁傳來的INTENT
         bundle = getIntent().getExtras();//取得Intent傳送過來的資料
         if (bundle.getString("key").equals("edit")) {  //確認intent回傳KEY值為edit ，更改標題，取得ID，呼叫querydata()方法，將值show出
@@ -202,10 +204,10 @@ public class AddActivity extends AppCompatActivity implements View.OnClickListen
                         c.set(Calendar.YEAR, year);
                         c.set(Calendar.MONTH, month);
                         c.set(Calendar.DATE, dayOfMonth);
-                        //註冊廣播
-                        IntentFilter intentFilter = new IntentFilter("com.example.administrator.noteapp");
-                        MyNoteReceiver myNoteReceiver = new MyNoteReceiver();
-                        registerReceiver(myNoteReceiver, intentFilter);
+                        //註冊動態廣播，改用靜態註冊
+                        //IntentFilter intentFilter = new IntentFilter("com.example.administrator.noteapp");
+                        //MyNoteReceiver myNoteReceiver = new MyNoteReceiver();
+                        //registerReceiver(myNoteReceiver, intentFilter);
                         //設定AlarmManager傳送廣播時間與資料
                         alarmMgr = (AlarmManager) getSystemService(Service.ALARM_SERVICE);
                         Intent intent = new Intent("com.example.administrator.noteapp");
